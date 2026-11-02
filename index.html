@@ -1,1 +1,592 @@
-"#Floodfleet1" 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodFleet Restaurant Billing</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+header {
+    background: #14243a;
+    color: white;
+    padding: 22px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    color: #25c6a5;
+    font-size: 28px;
+}
+
+header span {
+    font-size: 14px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.customer-box {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 12px #00000010;
+}
+
+h2 {
+    margin-bottom: 18px;
+    color: #14243a;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    margin-top: 8px;
+}
+
+label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.food-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px #00000010;
+}
+
+.food-card h3 {
+    margin-bottom: 10px;
+}
+
+.price {
+    color: #0d9b7c;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.food-card input {
+    margin-bottom: 10px;
+}
+
+button {
+    background: #0d9b7c;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 7px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #08765f;
+}
+
+.bill-box {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+    height: fit-content;
+    box-shadow: 0 3px 12px #00000010;
+}
+
+.bill-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+}
+
+.total {
+    font-size: 21px;
+    font-weight: bold;
+    color: #0d9b7c;
+    margin: 20px 0;
+}
+
+.payment {
+    margin-top: 20px;
+}
+
+.payment button {
+    margin-top: 12px;
+}
+
+.remove-btn {
+    width: auto;
+    padding: 5px 9px;
+    background: #dc5555;
+    margin-left: 8px;
+}
+
+#message {
+    margin-top: 15px;
+    color: #08765f;
+    font-weight: bold;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #64748b;
+}
+
+@media(max-width: 750px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+
+    header {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media print {
+    header, .customer-box, .menu-section,
+    .payment, footer, .remove-btn {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+    }
+
+    .main-content {
+        display: block;
+    }
+
+    .bill-box {
+        box-shadow: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🍽 FoodFleet</h1>
+    <span>Restaurant Order & Billing System</span>
+</header>
+
+<div class="container">
+
+    <!-- Customer Details -->
+
+    <section class="customer-box">
+        <h2>Customer Details</h2>
+
+        <div class="form-grid">
+
+            <div>
+                <label>Staff ID</label>
+                <input type="number" id="staffId"
+                placeholder="Enter Staff ID">
+            </div>
+
+            <div>
+                <label>Customer Name</label>
+                <input type="text" id="customerName"
+                placeholder="Enter Customer Name">
+            </div>
+
+            <div>
+                <label>Table Number</label>
+                <input type="number" id="tableNumber"
+                placeholder="Enter Table Number">
+            </div>
+
+        </div>
+    </section>
+
+    <div class="main-content">
+
+        <!-- Menu Section -->
+
+        <section class="menu-section">
+            <h2>Restaurant Menu</h2>
+
+            <div class="menu-grid" id="menuGrid"></div>
+        </section>
+
+        <!-- Billing Section -->
+
+        <section class="bill-box">
+
+            <h2>🧾 Your Bill</h2>
+
+            <div id="billItems">
+                <p>No items ordered.</p>
+            </div>
+
+            <div class="total">
+                Total: Rs. <span id="total">0.00</span>
+            </div>
+
+            <div class="payment">
+
+                <h2>Payment Method</h2>
+
+                <select id="paymentMode">
+                    <option value="">Select Payment</option>
+                    <option value="Cash">Cash</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Card">Card</option>
+                </select>
+
+                <div id="cashSection" hidden>
+                    <label>Enter Cash Amount</label>
+                    <input type="number" id="cashAmount"
+                    placeholder="Enter amount" min="0" step="0.01">
+                </div>
+
+                <button onclick="processPayment()">
+                    Complete Payment
+                </button>
+
+                <button onclick="printBill()"
+                style="background:#2563eb;">
+                    Print Bill
+                </button>
+
+                <button onclick="clearOrder()"
+                style="background:#64748b;">
+                    Clear Order
+                </button>
+
+                <p id="message"></p>
+
+            </div>
+
+        </section>
+
+    </div>
+</div>
+
+<footer>
+    © 2026 FoodFleet | Restaurant Billing System
+</footer>
+
+<script>
+
+// Restaurant Menu - Same values as Java program
+
+const menu = [
+    {id:1, name:"Burger", price:120},
+    {id:2, name:"Pizza", price:250},
+    {id:3, name:"Biryani", price:180},
+    {id:4, name:"Fried Rice", price:150},
+    {id:5, name:"Noodles", price:140},
+    {id:6, name:"Coffee", price:60}
+];
+
+let cart = [];
+
+// Display Menu
+
+function displayMenu() {
+
+    const grid = document.getElementById("menuGrid");
+
+    grid.innerHTML = "";
+
+    menu.forEach(item => {
+
+        grid.innerHTML += `
+            <div class="food-card">
+
+                <h3>${item.name}</h3>
+
+                <p class="price">
+                    Rs. ${item.price}
+                </p>
+
+                <label>Quantity</label>
+
+                <input type="number"
+                id="qty${item.id}"
+                value="1"
+                min="1">
+
+                <button onclick="addToBill(${item.id})">
+                    Add to Bill
+                </button>
+
+            </div>
+        `;
+
+    });
+}
+
+// Add Food to Bill
+
+function addToBill(id) {
+
+    const item = menu.find(food => food.id === id);
+
+    const quantity = Number(
+        document.getElementById("qty" + id).value
+    );
+
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+        alert("Please enter a valid quantity!");
+        return;
+    }
+
+    const existing = cart.find(food => food.id === id);
+
+    if (existing) {
+        existing.quantity += quantity;
+    } else {
+        cart.push({
+            ...item,
+            quantity: quantity
+        });
+    }
+
+    document.getElementById("message").innerText =
+        item.name + " added to bill!";
+
+    updateBill();
+}
+
+// Calculate Total
+
+function calculateTotal() {
+
+    return cart.reduce((sum, item) =>
+        sum + item.price * item.quantity, 0
+    );
+
+}
+
+// Display Bill
+
+function updateBill() {
+
+    const bill = document.getElementById("billItems");
+
+    bill.innerHTML = "";
+
+    if (cart.length === 0) {
+        bill.innerHTML = "<p>No items ordered.</p>";
+    }
+
+    cart.forEach(item => {
+
+        const itemTotal = item.price * item.quantity;
+
+        bill.innerHTML += `
+
+            <div class="bill-item">
+
+                <span>
+                    ${item.name} × ${item.quantity}
+                    <br>
+                    Rs. ${itemTotal}
+                </span>
+
+                <button class="remove-btn"
+                onclick="removeItem(${item.id})">
+                    Remove
+                </button>
+
+            </div>
+
+        `;
+
+    });
+
+    document.getElementById("total").innerText =
+        calculateTotal().toFixed(2);
+
+}
+
+// Remove Item
+
+function removeItem(id) {
+
+    cart = cart.filter(item => item.id !== id);
+
+    updateBill();
+
+}
+
+// Payment Mode
+
+document.getElementById("paymentMode")
+.addEventListener("change", function() {
+
+    document.getElementById("cashSection").hidden =
+        this.value !== "Cash";
+
+});
+
+// Process Payment
+
+function processPayment() {
+
+    const staffId = document.getElementById("staffId").value;
+    const customer = document.getElementById("customerName").value.trim();
+    const table = document.getElementById("tableNumber").value;
+    const mode = document.getElementById("paymentMode").value;
+
+    const total = calculateTotal();
+
+    if (!staffId || Number(staffId) <= 0) {
+        alert("Enter a valid Staff ID!");
+        return;
+    }
+
+    if (!customer) {
+        alert("Enter Customer Name!");
+        return;
+    }
+
+    if (!table || Number(table) <= 0) {
+        alert("Enter a valid Table Number!");
+        return;
+    }
+
+    if (cart.length === 0) {
+        alert("No items ordered!");
+        return;
+    }
+
+    if (!mode) {
+        alert("Select Payment Method!");
+        return;
+    }
+
+    if (mode === "Cash") {
+
+        const cash = Number(
+            document.getElementById("cashAmount").value
+        );
+
+        if (!Number.isFinite(cash) || cash < total) {
+            alert("Insufficient or invalid cash amount!");
+            return;
+        }
+
+        alert(
+            "Payment Successful!\n" +
+            "Change: Rs. " + (cash-total).toFixed(2)
+        );
+
+    } else {
+
+        alert(
+            mode + " payment selected.\n" +
+            "Demo payment confirmation successful."
+        );
+
+    }
+
+    document.getElementById("message").innerText =
+        "✓ Payment completed successfully!";
+
+    alert(
+        "FOODFLEET RECEIPT\n\n" +
+        "Customer: " + customer + "\n" +
+        "Staff ID: " + staffId + "\n" +
+        "Table: " + table + "\n" +
+        "Total: Rs. " + total.toFixed(2) + "\n" +
+        "Payment: " + mode
+    );
+
+}
+
+// Print Bill
+
+function printBill() {
+
+    if (cart.length === 0) {
+        alert("Add items before printing!");
+        return;
+    }
+
+    window.print();
+
+}
+
+// Clear Order
+
+function clearOrder() {
+
+    if (!confirm("Clear the current order?")) return;
+
+    cart = [];
+
+    updateBill();
+
+    document.getElementById("message").innerText =
+        "Order cleared.";
+
+    document.getElementById("paymentMode").value = "";
+    document.getElementById("cashAmount").value = "";
+    document.getElementById("cashSection").hidden = true;
+
+}
+
+// Initial Display
+
+displayMenu();
+
+updateBill();
+
+</script>
+
+</body>
+</html>
